@@ -24,3 +24,6 @@ elixir_todo_list-*.tar
 
 # Temporary files, for example, from tests.
 /tmp/
+
+# elixir ls files
+.elixir_ls/
