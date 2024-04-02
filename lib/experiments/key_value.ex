@@ -9,10 +9,6 @@ defmodule KeyValueStore do
   def call({:get, key}, state), do: {Map.get(state, key), state}
 end
 
-# pid = CustomServer.start(KeyValueStore)
-# CustomServer.call(pid, {:put, :key, :value})
-# CustomServer.call(pid, {:get, :key})
-
 defmodule CustomServer do
   def start(module) do
     spawn(fn ->
