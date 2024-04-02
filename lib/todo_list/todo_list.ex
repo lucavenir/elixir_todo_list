@@ -3,9 +3,7 @@ defmodule TodoList do
   @type t() :: %TodoList{next_id: pos_integer(), entries: map()}
 
   @spec new(list(map())) :: %TodoList{}
-  def new(entries \\ []) do
-    Enum.reduce(entries, %TodoList{}, &add_entry(&2, &1))
-  end
+  def new(entries \\ []), do: Enum.into(entries, %TodoList{})
 
   @spec add_entry(TodoList.t(), map()) :: TodoList.t()
   def add_entry(struct, entry) do
@@ -39,6 +37,14 @@ defmodule TodoList do
     new_entries = Map.delete(struct.entries, id)
     %TodoList{struct | entries: new_entries}
   end
+end
+
+defimpl Collectable, for: TodoList do
+  def into(original), do: {original, &into_callback/2}
+
+  defp into_callback(struct, {:cont, entry}), do: TodoList.add_entry(struct, entry)
+  defp into_callback(struct, :done), do: struct
+  defp into_callback(_, :halt), do: :ok
 end
 
 list =

@@ -14,4 +14,4 @@ defmodule TodoList.CsvImporter do
   end
 end
 
-TodoList.CsvImporter.import("assets/todos.csv") |> IO.inspect()
+TodoList.CsvImporter.import("assets/todos.csv")
