@@ -1,4 +1,4 @@
-defmodule TodoList.TodoServer do
+defmodule TodoList.Server do
   def start do
     spawn(fn -> loop(TodoList.new()) end)
   end
@@ -20,11 +20,12 @@ defmodule TodoList.TodoServer do
   def delete(pid, id), do: send(pid, {:delete, id})
 
   defp loop(state) do
-    receive do
-      message -> crud(state, message)
-    end
+    new_state =
+      receive do
+        message -> crud(state, message)
+      end
 
-    loop(state)
+    loop(new_state)
   end
 
   defp crud(state, {:read, pid, date}) do
