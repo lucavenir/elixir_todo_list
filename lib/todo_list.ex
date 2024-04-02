@@ -2,8 +2,10 @@ defmodule TodoList do
   defstruct next_id: 1, entries: %{}
   @type t() :: %TodoList{next_id: pos_integer(), entries: map()}
 
-  @spec new() :: %TodoList{}
-  def new(), do: %TodoList{}
+  @spec new(list(map())) :: %TodoList{}
+  def new(entries \\ []) do
+    Enum.reduce(entries, %TodoList{}, &add_entry(&2, &1))
+  end
 
   @spec add_entry(TodoList.t(), map()) :: TodoList.t()
   def add_entry(struct, entry) do
