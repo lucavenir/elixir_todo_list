@@ -41,22 +41,6 @@ defmodule TodoList do
   end
 end
 
-defmodule TodoList.CsvImporter do
-  @spec import(String.t()) :: TodoList.t()
-  def import(file_path) do
-    File.stream!(file_path)
-    |> Stream.map(&String.trim/1)
-    |> Stream.map(&String.split(&1, ","))
-    |> Stream.map(&parse_line/1)
-    |> Enum.to_list()
-    |> TodoList.new()
-  end
-
-  defp parse_line([date, task]) do
-    %{date: Date.from_iso8601!(date), task: task}
-  end
-end
-
 list =
   TodoList.new()
   |> TodoList.add_entry(%{date: ~D[2024-04-01], task: "Write blog post"})
@@ -67,5 +51,3 @@ _ = list |> TodoList.entries(~D[2024-04-01])
 
 list |> TodoList.update_entry(1, &%{&1 | task: "LOL"})
 list |> TodoList.delete_entry(1)
-
-TodoList.CsvImporter.import("assets/todos.csv") |> IO.inspect()
