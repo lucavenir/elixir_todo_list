@@ -47,3 +47,6 @@ list =
 
 results = list |> TodoList.entries(~D[2024-04-01])
 IO.inspect(results)
+
+list |> TodoList.update_entry(1, &%{&1 | task: "LOL"}) |> IO.inspect()
+list |> TodoList.delete_entry(1) |> IO.inspect()
