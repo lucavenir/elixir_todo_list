@@ -1,6 +1,6 @@
 defmodule TodoList do
   defstruct next_id: 1, entries: %{}
-  @type t() :: %TodoList{next_id: integer(), entries: map()}
+  @type t() :: %TodoList{next_id: pos_integer(), entries: map()}
 
   @spec new() :: %TodoList{}
   def new(), do: %TodoList{}
@@ -17,6 +17,25 @@ defmodule TodoList do
     struct.entries
     |> Map.values()
     |> Enum.filter(&(&1.date == date))
+  end
+
+  @spec update_entry(TodoList.t(), pos_integer(), (map() -> map())) :: TodoList.t()
+  def update_entry(struct, id, updater) do
+    case Map.fetch(struct.entries, id) do
+      :error ->
+        struct
+
+      {:ok, entry} ->
+        new_entry = updater.(entry)
+        new_entries = Map.put(struct.entries, new_entry.id, new_entry)
+        %TodoList{struct | entries: new_entries}
+    end
+  end
+
+  @spec delete_entry(TodoList.t(), pos_integer()) :: TodoList.t()
+  def delete_entry(struct, id) do
+    new_entries = Map.delete(struct.entries, id)
+    %TodoList{struct | entries: new_entries}
   end
 end
 
