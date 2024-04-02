@@ -40,6 +40,6 @@ defmodule ServerCalculator do
 
   defp operation(current, invalid) do
     IO.puts("Requested an invalid operation: #{inspect(invalid)}")
-    current_value
+    current
   end
 end
