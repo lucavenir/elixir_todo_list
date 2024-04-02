@@ -1,12 +1,15 @@
 defmodule TodoList.Server do
   def start do
-    spawn(fn -> loop(TodoList.new()) end)
+    spawn(fn ->
+      Process.register(self(), :todolist_server)
+      loop(TodoList.new())
+    end)
   end
 
-  def add(pid, entry), do: send(pid, {:create, entry})
+  def add(entry), do: send(:todolist_server, {:create, entry})
 
-  def entries(pid, date) do
-    send(pid, {:read, self(), date})
+  def entries(date) do
+    send(:todolist_server, {:read, self(), date})
 
     receive do
       {:result, entries} -> entries
@@ -15,14 +18,16 @@ defmodule TodoList.Server do
     end
   end
 
-  def update(pid, id, updater), do: send(pid, {:update, id, updater})
+  def update(id, updater), do: send(:todolist_server, {:update, id, updater})
 
-  def delete(pid, id), do: send(pid, {:delete, id})
+  def delete(id), do: send(:todolist_server, {:delete, id})
 
   defp loop(state) do
     new_state =
       receive do
-        message -> crud(state, message)
+        message ->
+          IO.inspect(message)
+          crud(state, message)
       end
 
     loop(new_state)
