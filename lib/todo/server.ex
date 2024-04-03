@@ -1,11 +1,11 @@
 defmodule Todo.Server do
   use GenServer
 
-  def start, do: GenServer.start(Todo.Server, %{}, name: __MODULE__)
-  def add(entry), do: GenServer.cast(__MODULE__, {:create, entry})
-  def update(id, updater), do: GenServer.cast(__MODULE__, {:update, id, updater})
-  def delete(id), do: GenServer.cast(__MODULE__, {:delete, id})
-  def entries(date), do: GenServer.call(__MODULE__, {:read, date})
+  def start(), do: GenServer.start(Todo.Server, %{})
+  def add(user, entry), do: GenServer.cast(user, {:create, entry})
+  def update(user, id, updater), do: GenServer.cast(user, {:update, id, updater})
+  def delete(user, id), do: GenServer.cast(user, {:delete, id})
+  def entries(user, date), do: GenServer.call(user, {:read, date})
 
   @impl GenServer
   @spec init(list(map())) :: {:ok, Todo.List.t()}
