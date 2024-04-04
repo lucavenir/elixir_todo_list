@@ -14,6 +14,10 @@ defmodule Todo.Db do
     Todo.DbWorker.get(worker, key)
   end
 
+  def clear do
+    File.rm_rf!(@folder)
+  end
+
   def init(_) do
     File.mkdir_p!(@folder)
 
