@@ -27,3 +27,6 @@ elixir_todo_list-*.tar
 
 # elixir ls files
 .elixir_ls/
+
+# our persistence files
+/db/

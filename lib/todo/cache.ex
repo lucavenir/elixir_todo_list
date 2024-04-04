@@ -5,7 +5,10 @@ defmodule Todo.Cache do
   def get(pid, name), do: GenServer.call(pid, {:pid, name})
 
   @impl GenServer
-  def init(_), do: {:ok, %{}}
+  def init(_) do
+    Todo.Db.start()
+    {:ok, %{}}
+  end
 
   @impl GenServer
   def handle_call({:pid, name}, _from, state) do
@@ -14,7 +17,7 @@ defmodule Todo.Cache do
         {:reply, pid, state}
 
       :error ->
-        {:ok, new_pid} = Todo.Server.start()
+        {:ok, new_pid} = Todo.Server.start(name)
         {:reply, new_pid, Map.put(state, name, new_pid)}
     end
   end
