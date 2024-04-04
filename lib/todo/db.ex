@@ -3,32 +3,36 @@ defmodule Todo.Db do
   @folder "./db"
 
   def start, do: GenServer.start(__MODULE__, nil, name: __MODULE__)
-  def put(key, value), do: GenServer.cast(__MODULE__, {:put, key, value})
-  def get(key), do: GenServer.call(__MODULE__, {:get, key})
+
+  def put(key, value) do
+    worker = GenServer.call(__MODULE__, {:choose, key})
+    Todo.DbWorker.put(worker, key, value)
+  end
+
+  def get(key) do
+    worker = GenServer.call(__MODULE__, {:choose, key})
+    Todo.DbWorker.get(worker, key)
+  end
 
   def init(_) do
     File.mkdir_p!(@folder)
-    {:ok, nil}
-  end
 
-  def handle_cast({:put, key, value}, state) do
-    key |> file_name() |> File.write!(:erlang.term_to_binary(value))
-    {:noreply, state}
-  end
-
-  def handle_call({:get, key}, _, state) do
-    read = key |> file_name() |> File.read()
-
-    data =
-      case read do
-        {:ok, content} -> :erlang.binary_to_term(content)
-        _ -> nil
+    workers =
+      for i <- 0..2, into: %{} do
+        {:ok, worker} = Todo.DbWorker.start(@folder)
+        {i, worker}
       end
 
-    {:reply, data, state}
+    {:ok, workers}
   end
 
-  defp file_name(key) do
-    Path.join(@folder, "#{to_string(key)}.todo")
+  def handle_call({:choose, key}, _, state) do
+    worker = choose_worker(state, key)
+    {:reply, worker, state}
+  end
+
+  defp choose_worker(pool, key) do
+    i = :erlang.phash2(key, 3)
+    pool[i]
   end
 end
