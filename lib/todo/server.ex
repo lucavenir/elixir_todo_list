@@ -22,24 +22,24 @@ defmodule Todo.Server do
   def handle_cast({:create, todo}, {name, todos}) do
     updated = Todo.List.add_entry(todos, todo)
     Todo.Db.put(name, updated)
-    {:noreply, updated}
+    {:noreply, {name, updated}}
   end
 
   def handle_cast({:update, id, updater}, {name, todos}) do
     updated = Todo.List.update_entry(todos, id, updater)
     Todo.Db.put(name, updated)
-    {:noreply, updated}
+    {:noreply, {name, updated}}
   end
 
   def handle_cast({:delete, id}, {name, todos}) do
     updated = Todo.List.delete_entry(todos, id)
     Todo.Db.put(name, updated)
-    {:noreply, updated}
+    {:noreply, {name, updated}}
   end
 
   @impl GenServer
-  def handle_call({:read, date}, _from, {_name, todos}) do
+  def handle_call({:read, date}, _from, {name, todos}) do
     read = Todo.List.entries(todos, date)
-    {:reply, read, todos}
+    {:reply, read, {name, todos}}
   end
 end

@@ -12,12 +12,14 @@ defmodule Todo.CacheTest do
   test "add" do
     {:ok, cache} = Todo.Cache.start()
     alice = Todo.Cache.get(cache, "alice")
-    date = ~D[2021-01-01]
-    task = "Alice's task"
+    d = ~D[2021-01-01]
+    t = "Alice's task"
 
-    Todo.Server.add(alice, %{date: date, title: task})
-    entries = Todo.Server.entries(alice, date)
+    Todo.Server.add(alice, %{date: d, title: t})
+    entries = Todo.Server.entries(alice, d)
 
-    assert [%{date: date, title: task}] = entries
+    assert [%{date: ^d, title: ^t}] = entries
+
+    Todo.Server.delete(alice, 1)
   end
 end

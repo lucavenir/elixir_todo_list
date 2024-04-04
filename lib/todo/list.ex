@@ -1,6 +1,6 @@
 defmodule Todo.List do
   defstruct next_id: 1, entries: %{}
-  @type t() :: %Todo.List{next_id: pos_integer(), entries: map()}
+  @type t() :: %Todo.List{next_id: pos_integer(), entries: %{}}
 
   @spec new(list(map())) :: %Todo.List{}
   def new(entries \\ []), do: Enum.into(entries, %Todo.List{})
@@ -37,6 +37,8 @@ defmodule Todo.List do
     new_entries = Map.delete(struct.entries, id)
     %Todo.List{struct | entries: new_entries}
   end
+
+  def size(struct), do: Enum.count(struct.entries)
 end
 
 defimpl Collectable, for: Todo.List do
@@ -46,14 +48,3 @@ defimpl Collectable, for: Todo.List do
   defp into_callback(struct, :done), do: struct
   defp into_callback(_, :halt), do: :ok
 end
-
-list =
-  Todo.List.new()
-  |> Todo.List.add_entry(%{date: ~D[2024-04-01], task: "Write blog post"})
-  |> Todo.List.add_entry(%{date: ~D[2024-04-01], task: "Write more blog posts"})
-  |> Todo.List.add_entry(%{date: ~D[2024-04-02], task: "Write even more more blog posts"})
-
-_ = list |> Todo.List.entries(~D[2024-04-01])
-
-list |> Todo.List.update_entry(1, &%{&1 | task: "LOL"})
-list |> Todo.List.delete_entry(1)
