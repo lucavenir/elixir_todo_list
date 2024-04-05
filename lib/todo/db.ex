@@ -20,13 +20,13 @@ defmodule Todo.Db do
     File.rm_rf!(@folder)
   end
 
-  def init(amount) do
+  def init(pool_size) do
     IO.puts("Starting Todo.Db")
     File.mkdir_p!(@folder)
 
     workers =
-      for i <- 0..(amount - 1), into: %{} do
-        {:ok, worker} = Todo.DbWorker.start_link(@folder)
+      for i <- 0..(pool_size - 1), into: %{} do
+        {:ok, worker} = Todo.DbWorker.start_link({@folder, i})
         {i, worker}
       end
 

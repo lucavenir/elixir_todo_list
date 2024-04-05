@@ -1,12 +1,21 @@
 defmodule Todo.DbWorker do
   use GenServer
 
-  def start_link(folder), do: GenServer.start_link(__MODULE__, folder)
-  def put(pid, key, value), do: GenServer.cast(pid, {:put, key, value})
-  def get(pid, key), do: GenServer.call(pid, {:get, key})
+  def start_link({folder, id}) do
+    GenServer.start_link(__MODULE__, folder, name: via_tuple(id))
+  end
+
+  def put(id, key, value) do
+    GenServer.cast(via_tuple(id), {:put, key, value})
+  end
+
+  def get(id, key) do
+    GenServer.call(via_tuple(id), {:get, key})
+  end
 
   def init(folder) do
     IO.puts("Starting Todo.DbWorker")
+
     {:ok, folder}
   end
 
@@ -29,5 +38,9 @@ defmodule Todo.DbWorker do
 
   defp file_name(key, folder) do
     Path.join(folder, "#{to_string(key)}.todo")
+  end
+
+  defp via_tuple(id) do
+    Todo.Registry.via_tuple({__MODULE__, id})
   end
 end

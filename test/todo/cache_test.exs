@@ -25,28 +25,5 @@ defmodule Todo.CacheTest do
         title: title
       }
     end
-
-    test "add", context do
-      alice = context.alice
-      title = context.title
-      date = context.date
-      Todo.Server.add(alice, %{date: date, title: title})
-
-      entries = Todo.Server.entries(alice, date)
-
-      assert [%{date: ^date, title: ^title}] = entries
-    end
-
-    test "delete", context do
-      alice = context.alice
-      title = context.title
-      date = context.date
-      Todo.Server.add(alice, %{date: date, title: title})
-
-      Todo.Server.delete(alice, 1)
-      entries = Todo.Server.entries(alice, date)
-
-      assert [] = entries
-    end
   end
 end

@@ -6,6 +6,13 @@ defmodule Todo.System do
   end
 
   def init(_) do
-    Supervisor.init([Todo.Cache, Todo.Db], strategy: :one_for_one)
+    Supervisor.init(
+      [
+        Todo.Registry,
+        Todo.Db,
+        Todo.Cache
+      ],
+      strategy: :one_for_one
+    )
   end
 end
