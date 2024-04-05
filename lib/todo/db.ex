@@ -2,7 +2,9 @@ defmodule Todo.Db do
   use GenServer
   @folder "./db"
 
-  def start, do: GenServer.start(__MODULE__, nil, name: __MODULE__)
+  def start(opts \\ [amount: 3]) do
+    GenServer.start(__MODULE__, opts[:amount], name: __MODULE__)
+  end
 
   def put(key, value) do
     worker = GenServer.call(__MODULE__, {:choose, key})
@@ -18,11 +20,11 @@ defmodule Todo.Db do
     File.rm_rf!(@folder)
   end
 
-  def init(_) do
+  def init(amount) do
     File.mkdir_p!(@folder)
 
     workers =
-      for i <- 0..2, into: %{} do
+      for i <- 0..(amount - 1), into: %{} do
         {:ok, worker} = Todo.DbWorker.start(@folder)
         {i, worker}
       end
@@ -36,7 +38,8 @@ defmodule Todo.Db do
   end
 
   defp choose_worker(pool, key) do
-    i = :erlang.phash2(key, 3)
+    size = Kernel.map_size(pool)
+    i = :erlang.phash2(key, size)
     pool[i]
   end
 end
