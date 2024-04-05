@@ -2,17 +2,17 @@ defmodule Todo.CacheTest do
   use ExUnit.Case
 
   test "cache get" do
-    {:ok, cache} = Todo.Cache.start()
-    bob_pid = Todo.Cache.get(cache, "bob")
+    {:ok, _} = Todo.Cache.start_link(nil)
+    bob_pid = Todo.Cache.get("bob")
 
-    assert bob_pid != Todo.Cache.get(cache, "alice")
-    assert bob_pid == Todo.Cache.get(cache, "bob")
+    assert bob_pid != Todo.Cache.get("alice")
+    assert bob_pid == Todo.Cache.get("bob")
   end
 
   describe "cache tests" do
     setup do
-      {:ok, cache} = Todo.Cache.start()
-      alice = Todo.Cache.get(cache, "alice")
+      {:ok, cache} = Todo.Cache.start_link(nil)
+      alice = Todo.Cache.get("alice")
       date = ~D[2021-01-01]
       title = "Alice's task"
       on_exit(&Todo.Db.clear/0)

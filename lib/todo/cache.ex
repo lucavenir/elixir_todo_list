@@ -1,11 +1,12 @@
 defmodule Todo.Cache do
   use GenServer
 
-  def start, do: GenServer.start(__MODULE__, %{})
-  def get(pid, name), do: GenServer.call(pid, {:pid, name})
+  def start_link(_arg), do: GenServer.start_link(__MODULE__, %{}, name: __MODULE__)
+  def get(name), do: GenServer.call(__MODULE__, {:pid, name})
 
   @impl GenServer
   def init(_) do
+    IO.puts("Starting Todo.Cache")
     Todo.Db.start()
     {:ok, %{}}
   end
@@ -14,9 +15,11 @@ defmodule Todo.Cache do
   def handle_call({:pid, name}, _from, state) do
     case Map.fetch(state, name) do
       {:ok, pid} ->
+        IO.puts("Fetching an existing cache named #{name}")
         {:reply, pid, state}
 
       :error ->
+        IO.puts("Starting a new cache with name #{name}")
         {:ok, new_pid} = Todo.Server.start(name)
         {:reply, new_pid, Map.put(state, name, new_pid)}
     end
