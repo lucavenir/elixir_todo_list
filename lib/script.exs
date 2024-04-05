@@ -1,0 +1,5 @@
+Todo.System.start_link()
+db = Process.whereis(Todo.Db)
+Process.exit(db, :kill)
+cache = Process.whereis(Todo.Cache)
+Process.exit(cache, :kill)

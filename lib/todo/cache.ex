@@ -7,7 +7,6 @@ defmodule Todo.Cache do
   @impl GenServer
   def init(_) do
     IO.puts("Starting Todo.Cache")
-    Todo.Db.start_link()
     {:ok, %{}}
   end
 

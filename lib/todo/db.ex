@@ -2,7 +2,7 @@ defmodule Todo.Db do
   use GenServer
   @folder "./db"
 
-  def start_link(opts \\ [amount: 3]) do
+  def start_link(_, opts \\ [amount: 3]) do
     GenServer.start_link(__MODULE__, opts[:amount], name: __MODULE__)
   end
 
@@ -21,6 +21,7 @@ defmodule Todo.Db do
   end
 
   def init(amount) do
+    IO.puts("Starting Todo.Db")
     File.mkdir_p!(@folder)
 
     workers =

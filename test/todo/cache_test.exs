@@ -9,9 +9,10 @@ defmodule Todo.CacheTest do
     assert bob_pid == Todo.Cache.get("bob")
   end
 
-  describe "cache tests" do
+  describe "cache" do
     setup do
       {:ok, cache} = Todo.Cache.start_link(nil)
+      Todo.Db.start_link(nil)
       alice = Todo.Cache.get("alice")
       date = ~D[2021-01-01]
       title = "Alice's task"
