@@ -1,11 +1,11 @@
 defmodule Todo.Server do
-  use GenServer
+  use GenServer, restart: :temporary
 
-  def start_link(name), do: GenServer.start_link(Todo.Server, name)
+  def start_link(name), do: GenServer.start_link(__MODULE__, name, name: via_tuple(name))
+  defp via_tuple(name), do: Todo.Registry.via_tuple({__MODULE__, name})
   def add(user, entry), do: GenServer.cast(user, {:create, entry})
   def update(user, id, updater), do: GenServer.cast(user, {:update, id, updater})
   def delete(user, id), do: GenServer.cast(user, {:delete, id})
-  @spec entries(atom() | pid() | {atom(), any()} | {:via, atom(), any()}, any()) :: any()
   def entries(user, date), do: GenServer.call(user, {:read, date})
 
   @impl GenServer
