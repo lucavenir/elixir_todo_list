@@ -2,8 +2,8 @@ defmodule Todo.Db do
   use GenServer
   @folder "./db"
 
-  def start(opts \\ [amount: 3]) do
-    GenServer.start(__MODULE__, opts[:amount], name: __MODULE__)
+  def start_link(opts \\ [amount: 3]) do
+    GenServer.start_link(__MODULE__, opts[:amount], name: __MODULE__)
   end
 
   def put(key, value) do
@@ -25,7 +25,7 @@ defmodule Todo.Db do
 
     workers =
       for i <- 0..(amount - 1), into: %{} do
-        {:ok, worker} = Todo.DbWorker.start(@folder)
+        {:ok, worker} = Todo.DbWorker.start_link(@folder)
         {i, worker}
       end
 

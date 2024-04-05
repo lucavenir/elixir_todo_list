@@ -1,7 +1,7 @@
 defmodule Todo.DbWorker do
   use GenServer
 
-  def start(folder), do: GenServer.start(__MODULE__, folder)
+  def start_link(folder), do: GenServer.start_link(__MODULE__, folder)
   def put(pid, key, value), do: GenServer.cast(pid, {:put, key, value})
   def get(pid, key), do: GenServer.call(pid, {:get, key})
 
