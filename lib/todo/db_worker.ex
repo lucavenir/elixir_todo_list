@@ -6,6 +6,7 @@ defmodule Todo.DbWorker do
   def get(pid, key), do: GenServer.call(pid, {:get, key})
 
   def init(folder) do
+    IO.puts("Starting Todo.DbWorker")
     {:ok, folder}
   end
 
