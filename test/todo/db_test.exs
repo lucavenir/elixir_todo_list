@@ -3,6 +3,6 @@ defmodule Todo.DbTest do
 
   test "init" do
     {:ok, workers} = Todo.Db.init(3)
-    assert Map.keys(workers) == [0, 1, 2]
+    assert MapSet.equal?(MapSet.new([0, 1, 2]), MapSet.new(Map.keys(workers)))
   end
 end
