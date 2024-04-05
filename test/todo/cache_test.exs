@@ -16,7 +16,6 @@ defmodule Todo.CacheTest do
       alice = Todo.Cache.get("alice")
       date = ~D[2021-01-01]
       title = "Alice's task"
-      on_exit(&Todo.Db.clear/0)
 
       %{
         cache: cache,

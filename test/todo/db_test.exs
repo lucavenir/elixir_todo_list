@@ -4,7 +4,8 @@ defmodule Todo.DbTest do
   test "init" do
     # how to close this link on test end?
     {:ok, _pid} = Todo.Registry.start_link()
-    {:ok, workers} = Todo.Db.init(3)
-    assert MapSet.equal?(MapSet.new([0, 1, 2]), MapSet.new(Map.keys(workers)))
+    {:ok, {_, workers}} = Todo.Db.init(nil)
+
+    assert [0, 1, 2] == Enum.map(workers, fn e -> e.id end)
   end
 end
