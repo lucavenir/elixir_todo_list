@@ -1,47 +1,46 @@
 defmodule Todo.Server do
-  use GenServer, restart: :temporary
+  use Agent, restart: :temporary
 
-  def start_link(name), do: GenServer.start_link(__MODULE__, name, name: via_tuple(name))
+  def start_link(user), do: Agent.start_link(fn -> init(user) end, name: via_tuple(user))
+
+  defp init(user) do
+    IO.puts("Starting Todo.Server for #{user}")
+    Todo.Db.get(user) || Todo.List.new()
+  end
+
+  def add(user, entry) do
+    Agent.cast(via_tuple(user), fn state -> handle_create(user, state, entry) end)
+  end
+
+  defp handle_create(name, state, todo) do
+    updated = Todo.List.add_entry(state, todo)
+    Todo.Db.put(name, updated)
+    {name, updated}
+  end
+
+  def update(user, id, updater) do
+    Agent.cast(via_tuple(user), fn state -> handle_update(user, state, id, updater) end)
+  end
+
+  defp handle_update(name, state, id, updater) do
+    updated = Todo.List.update_entry(state, id, updater)
+    Todo.Db.put(name, updated)
+    {name, updated}
+  end
+
+  def delete(user, id) do
+    Agent.cast(via_tuple(user), fn state -> handle_delete(user, state, id) end)
+  end
+
+  defp handle_delete(name, state, id) do
+    updated = Todo.List.delete_entry(state, id)
+    Todo.Db.put(name, updated)
+    {name, updated}
+  end
+
+  def entries(user, date) do
+    Agent.get(via_tuple(user), fn state -> Todo.List.entries(state, date) end)
+  end
+
   defp via_tuple(name), do: Todo.Registry.via_tuple({__MODULE__, name})
-  def add(user, entry), do: GenServer.cast(user, {:create, entry})
-  def update(user, id, updater), do: GenServer.cast(user, {:update, id, updater})
-  def delete(user, id), do: GenServer.cast(user, {:delete, id})
-  def entries(user, date), do: GenServer.call(user, {:read, date})
-
-  @impl GenServer
-  def init(name) do
-    IO.puts("Starting Todo.Server for #{name}")
-    {:ok, {name, nil}, {:continue, :init}}
-  end
-
-  @impl GenServer
-  def handle_continue(:init, {name, nil}) do
-    todos = Todo.Db.get(name) || Todo.List.new()
-    {:noreply, {name, todos}}
-  end
-
-  @impl GenServer
-  def handle_cast({:create, todo}, {name, todos}) do
-    updated = Todo.List.add_entry(todos, todo)
-    Todo.Db.put(name, updated)
-    {:noreply, {name, updated}}
-  end
-
-  def handle_cast({:update, id, updater}, {name, todos}) do
-    updated = Todo.List.update_entry(todos, id, updater)
-    Todo.Db.put(name, updated)
-    {:noreply, {name, updated}}
-  end
-
-  def handle_cast({:delete, id}, {name, todos}) do
-    updated = Todo.List.delete_entry(todos, id)
-    Todo.Db.put(name, updated)
-    {:noreply, {name, updated}}
-  end
-
-  @impl GenServer
-  def handle_call({:read, date}, _from, {name, todos}) do
-    read = Todo.List.entries(todos, date)
-    {:reply, read, {name, todos}}
-  end
 end
