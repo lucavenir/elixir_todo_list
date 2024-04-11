@@ -1,43 +1,29 @@
 defmodule Todo.Db do
-  use Supervisor
   @folder "./db"
   @pool_size 3
 
-  def start_link(_) do
-    Supervisor.start_link(__MODULE__, @pool_size, name: __MODULE__)
-  end
-
   def put(key, value) do
-    key
-    |> choose_worker()
-    |> Todo.DbWorker.put(key, value)
+    :poolboy.transaction(__MODULE__, fn pid -> Todo.DbWorker.put(pid, key, value) end)
   end
 
   def get(key) do
-    key
-    |> choose_worker()
-    |> Todo.DbWorker.get(key)
+    :poolboy.transaction(__MODULE__, fn pid -> Todo.DbWorker.get(pid, key) end)
   end
 
-  @impl Supervisor
-  def init(_) do
+  def child_spec(_) do
     IO.puts("Starting DB with pool size #{@pool_size}")
     File.mkdir_p!(@folder)
-    workers = Enum.map(0..(@pool_size - 1), &worker_spec/1)
-    Supervisor.init(workers, strategy: :one_for_one)
-  end
 
-  defp worker_spec(id) do
-    spec = {Todo.DbWorker, {@folder, id}}
-    Supervisor.child_spec(spec, id: id)
-  end
-
-  # def handle_call({:choose, key}, _, state) do
-  #   worker = choose_worker(state, key)
-  #   {:reply, worker, state}
-  # end
-
-  defp choose_worker(key) do
-    :erlang.phash2(key, @pool_size)
+    :poolboy.child_spec(
+      __MODULE__,
+      [
+        name: {:local, __MODULE__},
+        worker_module: Todo.DbWorker,
+        size: @pool_size
+      ],
+      [
+        @folder
+      ]
+    )
   end
 end

@@ -14,7 +14,7 @@ defmodule Todo.MixProject do
 
   def application do
     [
-      extra_applications: [:logger],
+      extra_applications: [:logger, :observer, :wx],
       mod: {Todo.Application, []}
     ]
   end
@@ -22,6 +22,7 @@ defmodule Todo.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
+      {:poolboy, "~> 1.5.2"},
       {:dialyxir, "~> 1.4.3", only: [:dev, :test], runtime: false}
     ]
   end
