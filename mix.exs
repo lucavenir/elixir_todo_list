@@ -23,6 +23,7 @@ defmodule Todo.MixProject do
   defp deps do
     [
       {:poolboy, "~> 1.5.2"},
+      {:plug_cowboy, "~> 2.6"},
       {:dialyxir, "~> 1.4.3", only: [:dev, :test], runtime: false}
     ]
   end

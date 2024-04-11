@@ -10,7 +10,8 @@ defmodule Todo.System do
       [
         Todo.Registry,
         Todo.Db,
-        Todo.Cache
+        Todo.Cache,
+        Todo.Web
       ],
       strategy: :one_for_one
     )
