@@ -1,0 +1,8 @@
+{
+  "tailwindCSS.includeLanguages": {
+    "phoenix-heex": "html"
+  },
+  "emmet.includeLanguages": {
+    "phoenix-heex": "html"
+  }
+}
