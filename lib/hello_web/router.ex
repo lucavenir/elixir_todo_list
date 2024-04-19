@@ -15,10 +15,31 @@ defmodule HelloWeb.Router do
     plug :accepts, ["json"]
   end
 
+  scope "/api", HelloWeb.Api, as: :api do
+    pipe_through :api
+
+    scope "/v1", V1, as: :v1 do
+      resources "/images", ImageController
+      resources "/reviews", ReviewController
+      resources "/users", UserController
+    end
+  end
+
+  scope "/admin", HelloWeb.Admin do
+    pipe_through :browser
+    resources "/users", ReviewController
+  end
+
   scope "/", HelloWeb do
     pipe_through :browser
 
     get "/", PageController, :home
+
+    resources "/users", UserController do
+      resources "/posts", PostController
+    end
+
+    resources "/comments", CommentController, except: [:delete]
     get "/hello", HelloController, :index
     get "/hello/:messenger", HelloController, :show
   end
