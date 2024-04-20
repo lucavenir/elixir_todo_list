@@ -25,31 +25,15 @@ defmodule HelloWeb.Router do
     end
   end
 
-  scope "/admin", HelloWeb.Admin do
-    pipe_through :browser
-    resources "/users", ReviewController
-  end
-
   scope "/", HelloWeb do
     pipe_through :browser
 
     get "/", PageController, :home
 
-    resources "/users", UserController do
-      resources "/posts", PostController
-    end
-
-    resources "/comments", CommentController, except: [:delete]
     get "/hello", HelloController, :index
     get "/hello/:messenger", HelloController, :show
   end
 
-  # Other scopes may use custom stacks.
-  # scope "/api", HelloWeb do
-  #   pipe_through :api
-  # end
-
-  # Enable LiveDashboard and Swoosh mailbox preview in development
   if Application.compile_env(:hello, :dev_routes) do
     # If you want to use the LiveDashboard in production, you should put
     # it behind authentication and allow only admins to access it.
