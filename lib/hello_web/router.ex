@@ -11,12 +11,16 @@ defmodule HelloWeb.Router do
     plug HelloWeb.Plugs.Locale, "en"
   end
 
+  pipeline :auth do
+    plug HelloWeb.Authentication
+  end
+
   pipeline :api do
     plug :accepts, ["json"]
   end
 
   scope "/api", HelloWeb.Api, as: :api do
-    pipe_through :api
+    pipe_through [:api, :auth]
 
     scope "/v1", V1, as: :v1 do
       resources "/images", ImageController
