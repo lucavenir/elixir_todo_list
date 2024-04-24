@@ -27,7 +27,11 @@ defmodule EcommerceWeb.ProductController do
   end
 
   def show(conn, %{"id" => id}) do
-    product = Catalog.get_product!(id)
+    product =
+      id
+      |> Catalog.get_product!()
+      |> Catalog.increment_views()
+
     render(conn, :show, product: product)
   end
 
