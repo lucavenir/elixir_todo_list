@@ -9,3 +9,7 @@
 #
 # We recommend using the bang functions (`insert!`, `update!`
 # and so on) as they will fail if something goes wrong.
+
+for title <- ["Home", "Electronics", "Books", "Clothing", "Toys"] do
+  {:ok, _} = Ecommerce.Catalog.create_category(%{title: title})
+end
