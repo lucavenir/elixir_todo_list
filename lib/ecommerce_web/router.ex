@@ -44,8 +44,8 @@ defmodule EcommerceWeb.Router do
 
     get "/", PageController, :home
     resources "/products", ProductController
-
     resources "/cart_items", CartItemController, only: [:create, :delete]
+    resources "/orders", OrderController, only: [:show, :create]
 
     get "/cart", CartController, :show
     put "/cart", CartController, :update
